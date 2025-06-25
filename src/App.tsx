@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Cloud, Sun, CloudRain, Wind, Droplets, MapPin, Search, Eye, Gauge, CloudSnow, Zap, CloudDrizzle, Sunset, Sunrise } from 'lucide-react';
+import { X, Menu, Cloud, Sun, CloudRain, Wind, Droplets, MapPin, Search, Eye, Gauge, CloudSnow, Zap, CloudDrizzle, Sunset, Sunrise } from 'lucide-react';
 
 // Define interfaces for weather data and city information
 interface WeatherData {
@@ -53,12 +53,32 @@ const WeatherApp: React.FC = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   // Effect to update current time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer); // Cleanup on component unmount
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSectionWithOffset = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const elementTop = element.getBoundingClientRect().top + window.scrollY;
+      const scrollTarget = elementTop + element.offsetHeight * -0.15;
+      window.scrollTo({
+        top: scrollTarget,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   // Maps weather codes to descriptive strings
   const getWeatherDescription = (code: number): string => {
@@ -170,9 +190,30 @@ const WeatherApp: React.FC = () => {
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          fetchWeather(position.coords.latitude, position.coords.longitude);
-          setSelectedCity('Current Location'); // Set a placeholder for current location
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // Fetch weather data
+          fetchWeather(lat, lon);
+          
+          // Reverse geocode to get location name
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reverse-geocode?lat=${lat}&lon=${lon}`
+            );
+            const data = await response.json();
+            
+            if (data.results && data.results.length > 0) {
+              const location = data.results[0];
+              setSelectedCity(`${location.name}${location.admin1 ? `, ${location.admin1}` : ''}, ${location.country}`);
+            } else {
+              setSelectedCity('Current Location');
+            }
+          } catch (err) {
+            console.error('Failed to get location name:', err);
+            setSelectedCity('Current Location'); // Fallback
+          }
         },
         (error) => {
           setError('Unable to retrieve your current location. Please allow location access or search for a city.');
@@ -232,6 +273,89 @@ const WeatherApp: React.FC = () => {
   return (
     // Main container with dynamic background gradient and subtle animations
     <div className={`min-h-screen font-sans bg-gradient-to-br ${backgroundGradient} transition-all duration-1000 ease-in-out relative overflow-hidden`}>
+      
+      {/* Header */}
+      <header
+        className={`fixed z-50 transition-all duration-300 transform ${scrollY > 90 ? 'top-4' : 'top-0'
+          } w-full`}
+      >
+        
+        <div
+          className={`mx-auto transition-all duration-300 ${scrollY > 90
+            ? 'w-[85%] bg-transparent backdrop-blur-md shadow-lg rounded-2xl px-[10px]'
+            : 'w-full bg-transparent px-[10px] rounded-none'
+            }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center">
+                  <span className="text-white font-poppins font-semibold text-xl">🌤</span>
+                </div>
+                <span
+                  className={`ml-3 text-xl font-inter font-semibold transition-colors duration-300 ${scrollY > 70 ? 'text-gray-900' : 'text-white'
+                    }`}
+                >
+                  Weather Forecast From Nugi
+                </span>
+              </div>
+
+              <nav className="hidden md:flex items-center space-x-8">
+                {['Search','Your Weather', '24 Hr Forecast', '7 Day Forecast'].map((link) => (
+                  <a
+                    key={link}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSectionWithOffset(`${link}`);
+                    }}
+                    className={`font-poppins font-medium transition-colors cursor-pointer ${scrollY > 90
+                      ? 'text-gray-700 hover:text-blue-600 hover:border-b-1'
+                      : 'text-white hover:text-blue-200 hover:border-b-1'
+                      }`}
+                  >
+                    {link.charAt(0).toUpperCase() + link.slice(1)}
+                  </a>
+                ))}
+              </nav>
+
+
+              <button
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? (
+                  <X className={`w-6 h-6 ${scrollY > 90 ? 'text-gray-900' : 'text-white'}`} />
+                ) : (
+                  <Menu className={`w-6 h-6 ${scrollY > 90 ? 'text-gray-900' : 'text-white'}`} />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {isMenuOpen && (
+        <div
+          className={`fixed z-40 transition-all duration-300 ${scrollY > 90
+            ? 'top-[calc(2rem+60px)] right-[7.5%] w-[200px]'
+            : 'top-[60px] right-4 w-[200px]'
+            } md:hidden bg-white/95 backdrop-blur-md shadow-lg border-none rounded-lg`}
+        >
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {['Search', 'Your Weather', '24 Hr Forecast', '7 Day Forecast'].map((link) => (
+              <a
+                key={link}
+                href={`#${link}`}
+                className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 space-x-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="capitalize">{link}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Animated background elements for visual interest */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-16 -left-16 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse-slow"></div>
@@ -268,7 +392,7 @@ const WeatherApp: React.FC = () => {
             <div className="relative">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                  <Search id="Search" className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
                   <input
                     type="text"
                     placeholder="Search for any city worldwide..."
@@ -331,7 +455,7 @@ const WeatherApp: React.FC = () => {
 
           {/* Weather Data Display */}
           {weatherData && (
-            <div className="space-y-8">
+            <div id="Your Weather" className="space-y-8">
               {/* Main Weather Card (Current Conditions) - No z-index needed here, as the search section now has a higher one */}
               <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 md:p-10 border border-white/20 shadow-2xl">
                 <div className="text-center mb-8">
@@ -382,7 +506,7 @@ const WeatherApp: React.FC = () => {
               </div>
 
               {/* Hourly Forecast Section */}
-              <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
+              <div id="24 Hr Forecast" className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center">
                   <Sunrise className="w-7 h-7 mr-3 text-yellow-300" />
                   24-Hour Forecast
@@ -411,7 +535,7 @@ const WeatherApp: React.FC = () => {
               </div>
 
               {/* 7-Day Forecast Section */}
-              <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
+              <div id="7 Day Forecast" className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center">
                   <Sunset className="w-7 h-7 mr-3 text-orange-300" />
                   7-Day Forecast
