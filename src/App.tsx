@@ -190,30 +190,9 @@ const WeatherApp: React.FC = () => {
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          
-          // Fetch weather data
-          fetchWeather(lat, lon);
-          
-          // Reverse geocode to get location name
-          try {
-            const response = await fetch(
-              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reverse-geocode?lat=${lat}&lon=${lon}`
-            );
-            const data = await response.json();
-            
-            if (data.results && data.results.length > 0) {
-              const location = data.results[0];
-              setSelectedCity(`${location.name}${location.admin1 ? `, ${location.admin1}` : ''}, ${location.country}`);
-            } else {
-              setSelectedCity('Current Location');
-            }
-          } catch (err) {
-            console.error('Failed to get location name:', err);
-            setSelectedCity('Current Location'); // Fallback
-          }
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+          setSelectedCity('Current Location'); // Set a placeholder for current location
         },
         (error) => {
           setError('Unable to retrieve your current location. Please allow location access or search for a city.');
@@ -279,7 +258,34 @@ const WeatherApp: React.FC = () => {
         className={`fixed z-50 transition-all duration-300 transform ${scrollY > 90 ? 'top-4' : 'top-0'
           } w-full`}
       >
-        
+        {/* <div className="w-full flex justify-between items-center text-sm px-7">
+          <div className="flex items-center space-x-6">
+            <span className="flex items-center space-x-2">
+              <Mail className="h-5 w-5 text-white" />
+              <span>info@Jaasify.com</span>
+            </span>
+            <span className="flex items-center space-x-2">
+              <Map className="h-5 w-5 text-white" />
+              <span>Nairobi Kenya</span>
+            </span>
+            <span className="flex items-center space-x-2">
+              <Phone className="h-5 w-5 text-white" />
+              <span>+254 712345678</span>
+            </span>
+          </div>
+          <div className="flex space-x-4">
+            <a href="#" className="hover:text-white transition-colors">
+              <Facebook className="h-5 w-5" />
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              <TwitterIcon className="h-5 w-5" />
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              <Linkedin className="h-5 w-5" />
+            </a>
+          </div>
+        </div> */}
+
         <div
           className={`mx-auto transition-all duration-300 ${scrollY > 90
             ? 'w-[85%] bg-transparent backdrop-blur-md shadow-lg rounded-2xl px-[10px]'
@@ -293,7 +299,7 @@ const WeatherApp: React.FC = () => {
                   <span className="text-white font-poppins font-semibold text-xl">🌤</span>
                 </div>
                 <span
-                  className={`ml-3 text-xl font-inter font-semibold transition-colors duration-300 ${scrollY > 70 ? 'text-gray-900' : 'text-white'
+                  className={`ml-3 text-xl font-poppins font-semibold transition-colors duration-300 ${scrollY > 70 ? 'text-gray-900' : 'text-white'
                     }`}
                 >
                   Weather Forecast From Nugi
