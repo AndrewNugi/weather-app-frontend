@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, MapPin, Search, Eye, Gauge, CloudSnow, Zap, CloudDrizzle, Sunset, Sunrise } from 'lucide-react';
+import { Cloud, Sun, CloudRain, Wind, Droplets, MapPin, Search, Eye, Gauge, CloudSnow, Zap, CloudDrizzle, Sunset, Sunrise } from 'lucide-react';
 
 // Define interfaces for weather data and city information
 interface WeatherData {
