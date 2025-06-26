@@ -68,11 +68,12 @@ const WeatherApp: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSectionWithOffset = (id: string) => {
+  const scrollToSectionWithOffset = (id: string, offset: number = 0) => {
     const element = document.getElementById(id);
     if (element) {
       const elementTop = element.getBoundingClientRect().top + window.scrollY;
-      const scrollTarget = elementTop + element.offsetHeight * -0.15;
+      const scrollTarget = elementTop - offset;
+  
       window.scrollTo({
         top: scrollTarget,
         behavior: 'smooth',
@@ -258,37 +259,10 @@ const WeatherApp: React.FC = () => {
         className={`fixed z-50 transition-all duration-300 transform ${scrollY > 90 ? 'top-4' : 'top-0'
           } w-full`}
       >
-        {/* <div className="w-full flex justify-between items-center text-sm px-7">
-          <div className="flex items-center space-x-6">
-            <span className="flex items-center space-x-2">
-              <Mail className="h-5 w-5 text-white" />
-              <span>info@Jaasify.com</span>
-            </span>
-            <span className="flex items-center space-x-2">
-              <Map className="h-5 w-5 text-white" />
-              <span>Nairobi Kenya</span>
-            </span>
-            <span className="flex items-center space-x-2">
-              <Phone className="h-5 w-5 text-white" />
-              <span>+254 712345678</span>
-            </span>
-          </div>
-          <div className="flex space-x-4">
-            <a href="#" className="hover:text-white transition-colors">
-              <Facebook className="h-5 w-5" />
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              <TwitterIcon className="h-5 w-5" />
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              <Linkedin className="h-5 w-5" />
-            </a>
-          </div>
-        </div> */}
-
+        
         <div
           className={`mx-auto transition-all duration-300 ${scrollY > 90
-            ? 'w-[85%] bg-transparent backdrop-blur-md shadow-lg rounded-2xl px-[10px]'
+            ? 'w-[85%] h-[100%] bg-transparent backdrop-blur-md shadow-lg rounded-2xl px-[10px]'
             : 'w-full bg-transparent px-[10px] rounded-none'
             }`}
         >
@@ -299,10 +273,10 @@ const WeatherApp: React.FC = () => {
                   <span className="text-white font-poppins font-semibold text-xl">🌤</span>
                 </div>
                 <span
-                  className={`ml-3 text-xl font-poppins font-semibold transition-colors duration-300 ${scrollY > 70 ? 'text-gray-900' : 'text-white'
+                  className={`ml-3 text-xl font-outfit font-medium transition-colors duration-300 ${scrollY > 70 ? 'text-gray-900' : 'text-white'
                     }`}
                 >
-                  Weather Forecast From Nugi
+                  Nugi's Weather Forecast
                 </span>
               </div>
 
@@ -312,9 +286,9 @@ const WeatherApp: React.FC = () => {
                     key={link}
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSectionWithOffset(`${link}`);
+                      scrollToSectionWithOffset(`${link}`, 60);
                     }}
-                    className={`font-poppins font-medium transition-colors cursor-pointer ${scrollY > 90
+                    className={`font-inter font-medium transition-colors cursor-pointer ${scrollY > 90
                       ? 'text-gray-700 hover:text-blue-600 hover:border-b-1'
                       : 'text-white hover:text-blue-200 hover:border-b-1'
                       }`}
@@ -343,7 +317,7 @@ const WeatherApp: React.FC = () => {
       {isMenuOpen && (
         <div
           className={`fixed z-40 transition-all duration-300 ${scrollY > 90
-            ? 'top-[calc(2rem+60px)] right-[7.5%] w-[200px]'
+            ? 'top-[calc(3rem+60px)] right-[7.5%] w-[200px]'
             : 'top-[60px] right-4 w-[200px]'
             } md:hidden bg-white/95 backdrop-blur-md shadow-lg border-none rounded-lg`}
         >
@@ -352,7 +326,7 @@ const WeatherApp: React.FC = () => {
               <a
                 key={link}
                 href={`#${link}`}
-                className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 space-x-2"
+                className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 space-x-2 font-inter font-extralight"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="capitalize">{link}</span>
@@ -373,10 +347,7 @@ const WeatherApp: React.FC = () => {
         <div className="max-w-7xl w-full mx-auto">
           {/* Header Section */}
           <div className="text-center mb-10 pt-12">
-            <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-3 drop-shadow-2xl tracking-tight">
-              SkyView
-            </h1>
-            <p className="text-white/80 text-xl md:text-2xl font-light leading-relaxed">
+            <p className="text-white/80 text-xl md:text-2xl font-light leading-relaxed font-inter font-extralight">
               {currentTime.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -384,7 +355,7 @@ const WeatherApp: React.FC = () => {
                 day: 'numeric' 
               })}
             </p>
-            <p className="text-white/60 text-base md:text-lg">
+            <p className="text-white/60 text-base md:text-lg font-inter font-extralight">
               {currentTime.toLocaleTimeString('en-US', {
                 hour: 'numeric',
                 minute: '2-digit',
@@ -398,7 +369,7 @@ const WeatherApp: React.FC = () => {
             <div className="relative">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search id="Search" className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                  <Search id="Search" className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5 font-inter font-extralight" />
                   <input
                     type="text"
                     placeholder="Search for any city worldwide..."
@@ -412,7 +383,7 @@ const WeatherApp: React.FC = () => {
                   className="flex items-center justify-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-4 rounded-2xl transition-all duration-300 hover:scale-105 border border-white/30 text-lg font-medium shadow-md"
                 >
                   <MapPin className="w-5 h-5" />
-                  <span className="hidden md:inline">Current Location</span>
+                  <span className="hidden md:inline font-inter font-extralight">Current Location</span>
                 </button>
               </div>
 
@@ -425,8 +396,8 @@ const WeatherApp: React.FC = () => {
                       onClick={() => handleCitySelect(city)}
                       className="group w-full text-left px-6 py-4 text-gray-800 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-100 last:border-b-0 first:rounded-t-2xl last:rounded-b-2xl"
                     >
-                      <div className="font-semibold text-lg group-hover:text-gray-900">{city.name}</div>
-                      <div className="text-sm text-gray-500 group-hover:text-gray-600">
+                      <div className="font-semibold text-lg group-hover:text-gray-900 font-inter font-extralight">{city.name}</div>
+                      <div className="text-sm text-gray-500 group-hover:text-gray-600 font-inter font-extralight">
                         {city.admin1 && `${city.admin1}, `}{city.country}
                       </div>
                     </button>
@@ -438,7 +409,7 @@ const WeatherApp: React.FC = () => {
             {/* Selected City Display */}
             {selectedCity && (
               <div className="mt-6 flex items-center space-x-3 text-white/90 text-xl font-medium">
-                <MapPin className="w-5 h-5 text-white/70" />
+                <MapPin className="w-5 h-5 text-white/70 font-inter font-extralight" />
                 <p>{selectedCity}</p>
               </div>
             )}
@@ -448,14 +419,14 @@ const WeatherApp: React.FC = () => {
           {loading && (
             <div className="text-center py-16">
               <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
-              <p className="text-white text-2xl mt-6 font-medium">Fetching the latest weather data...</p>
+              <p className="text-white text-2xl mt-6 font-medium font-inter">Fetching the latest weather data...</p>
             </div>
           )}
 
           {/* Error Message */}
           {error && (
             <div className="backdrop-blur-md bg-red-500/20 rounded-3xl p-6 md:p-8 mb-8 border border-red-400/30">
-              <p className="text-white text-center text-lg font-medium">{error}</p>
+              <p className="text-white text-center text-lg font-medium font-inter">{error}</p>
             </div>
           )}
 
@@ -468,13 +439,13 @@ const WeatherApp: React.FC = () => {
                   <div className="flex justify-center mb-6 group">
                     {getWeatherIcon(weatherData.current.weatherCode, "w-24 h-24")}
                   </div>
-                  <h2 className="text-7xl md:text-8xl font-bold text-white mb-2 drop-shadow-lg">
+                  <h2 className="text-7xl md:text-8xl font-bold text-white mb-2 drop-shadow-lg font-inter font-extralight">
                     {Math.round(weatherData.current.temperature)}°
                   </h2>
-                  <p className="text-3xl text-white/90 mb-3 font-medium">
+                  <p className="text-3xl text-white/90 mb-3 font-inter font-extralight">
                     {getWeatherDescription(weatherData.current.weatherCode)}
                   </p>
-                  <p className="text-white/70 text-xl">
+                  <p className="text-white/70 text-xl font-inter font-extralight">
                     {formatTime(weatherData.current.time)}
                   </p>
                 </div>
@@ -483,15 +454,15 @@ const WeatherApp: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div className="text-center p-5 bg-white/10 rounded-3xl backdrop-blur-sm transition-all duration-300 hover:bg-white/15 shadow-lg group">
                     <Droplets className="w-9 h-9 text-blue-300 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-white/70 text-sm font-light">Humidity</p>
-                    <p className="text-white text-2xl font-bold">
+                    <p className="text-white/70 text-sm font-inter font-extralight">Humidity</p>
+                    <p className="text-white text-2xl font-inter font-extralight">
                       {Math.round(weatherData.current.humidity)}%
                     </p>
                   </div>
                   <div className="text-center p-5 bg-white/10 rounded-3xl backdrop-blur-sm transition-all duration-300 hover:bg-white/15 shadow-lg group">
                     <Wind className="w-9 h-9 text-green-300 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-white/70 text-sm font-light">Wind Speed</p>
-                    <p className="text-white text-2xl font-bold">
+                    <p className="text-white/70 text-sm font-inter font-extralight">Wind Speed</p>
+                    <p className="text-white text-2xl font-inter font-extralight">
                       {Math.round(weatherData.current.windSpeed)} km/h
                     </p>
                     <p className="text-white/60 text-xs mt-1">
@@ -500,13 +471,13 @@ const WeatherApp: React.FC = () => {
                   </div>
                   <div className="text-center p-5 bg-white/10 rounded-3xl backdrop-blur-sm transition-all duration-300 hover:bg-white/15 shadow-lg group">
                     <Eye className="w-9 h-9 text-purple-300 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-white/70 text-sm font-light">Visibility</p>
-                    <p className="text-white text-2xl font-bold">10 km</p> {/* Static for now, can be dynamic */}
+                    <p className="text-white/70 text-sm font-inter font-extralight">Visibility</p>
+                    <p className="text-white text-2xl font-inter font-extralight">10 km</p> {/* Static for now, can be dynamic */}
                   </div>
                   <div className="text-center p-5 bg-white/10 rounded-3xl backdrop-blur-sm transition-all duration-300 hover:bg-white/15 shadow-lg group">
                     <Gauge className="w-9 h-9 text-orange-300 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-white/70 text-sm font-light">Pressure</p>
-                    <p className="text-white text-2xl font-bold">1013 hPa</p> {/* Static for now, can be dynamic */}
+                    <p className="text-white/70 text-sm font-inter font-extralight">Pressure</p>
+                    <p className="text-white text-2xl font-inter font-extralight">1013 hPa</p> {/* Static for now, can be dynamic */}
                   </div>
                 </div>
               </div>
@@ -514,7 +485,7 @@ const WeatherApp: React.FC = () => {
               {/* Hourly Forecast Section */}
               <div id="24 Hr Forecast" className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center">
-                  <Sunrise className="w-7 h-7 mr-3 text-yellow-300" />
+                  <Sunrise className="w-7 h-7 mr-3 text-yellow-300 font-inter font-extralight" />
                   24-Hour Forecast
                 </h3>
                 <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-white/10">
@@ -523,16 +494,16 @@ const WeatherApp: React.FC = () => {
                       key={index}
                       className="flex-shrink-0 text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm min-w-[120px] transition-all duration-300 hover:bg-white/20 shadow-md group"
                     >
-                      <p className="text-white/70 text-sm mb-2 font-medium">
+                      <p className="text-white/70 text-sm mb-2 font-inter font-extralight">
                         {new Date(time).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })}
                       </p>
-                      <div className="flex justify-center mb-2 group">
+                      <div className="flex justify-center mb-2 group font-inter font-extralight">
                         {getWeatherIcon(weatherData.hourly.weatherCode[index], "w-10 h-10")}
                       </div>
-                      <p className="text-white font-bold text-xl">
+                      <p className="text-white font-bold text-xl font-inter font-extralight">
                         {Math.round(weatherData.hourly.temperature[index])}°
                       </p>
-                      <p className="text-white/60 text-xs mt-1">
+                      <p className="text-white/60 text-xs mt-1 font-inter font-extralight">
                         {Math.round(weatherData.hourly.windSpeed[index])} km/h
                       </p>
                     </div>
@@ -543,7 +514,7 @@ const WeatherApp: React.FC = () => {
               {/* 7-Day Forecast Section */}
               <div id="7 Day Forecast" className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center">
-                  <Sunset className="w-7 h-7 mr-3 text-orange-300" />
+                  <Sunset className="w-7 h-7 mr-3 text-orange-300 font-outfit font-medium" />
                   7-Day Forecast
                 </h3>
                 <div className="space-y-4">
@@ -552,12 +523,12 @@ const WeatherApp: React.FC = () => {
                       key={index}
                       className="flex items-center justify-between p-4 bg-white/10 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:bg-white/20 shadow-md group"
                     >
-                      <div className="flex items-center space-x-4 flex-1">
+                      <div className="flex items-center space-x-4 flex-1 font-inter font-extralight">
                         <div className="group">
                           {getWeatherIcon(weatherData.daily.weatherCode[index], "w-12 h-12")}
                         </div>
                         <div>
-                          <p className="text-white font-semibold text-xl">
+                          <p className="text-white text-xl font-inter font-extralight">
                             {index === 0 ? 'Today' : formatDate(date)}
                           </p>
                           <p className="text-white/70 text-sm">
@@ -566,14 +537,14 @@ const WeatherApp: React.FC = () => {
                         </div>
                       </div>
                       <div className="text-right flex items-center space-x-3">
-                        <span className="text-white text-3xl font-bold">
+                        <span className="text-white text-3xl font-inter font-extralight">
                           {Math.round(weatherData.daily.temperatureMax[index])}°
                         </span>
-                        <span className="text-white/60 text-xl font-medium">
+                        <span className="text-white/60 text-xl font-inter font-extralight">
                           {Math.round(weatherData.daily.temperatureMin[index])}°
                         </span>
                       </div>
-                      <p className="text-white/60 text-sm ml-4 min-w-[60px] text-right">
+                      <p className="text-white/60 text-sm ml-4 min-w-[60px] text-right font-inter font-extralight">
                         {Math.round(weatherData.daily.precipitation[index])} mm
                       </p>
                     </div>
